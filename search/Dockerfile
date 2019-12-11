@@ -44,33 +44,6 @@ RUN if [ "$ALFRESCO_COMMS" == "https" ] ; then \
     ${DIST_DIR}/solr/bin/search_config_setup.sh; \
 fi
 
-# REPLICATION
-ARG ENABLE_MASTER
-ARG ENABLE_SLAVE
-ARG MASTER_HOST
-ENV ENABLE_MASTER $ENABLE_MASTER
-ENV ENABLE_SLAVE $ENABLE_SLAVE
-ENV MASTER_HOST $MASTER_HOST
-
-# Set Master / Slave configuration for this Node
-RUN if [ "$ENABLE_MASTER" == "true" ] ; then \
-        ${DIST_DIR}/solr/bin/search_config_setup.sh; \
-        sed -i "/^bash.*/i sed -i '/^\\\\\s*<requestHandler name=\"\\\\/replication\".*/a \
-            <lst name=\"master\">\
-            <str name=\"replicateAfter\">commit</str>\
-            <str name=\"replicateAfter\">startup</str>\
-            <str name=\"confFiles\">schema.xml,stopwords.txt</str>\
-            </lst>' ${DIST_DIR}/solrhome/templates/rerank/conf/solrconfig.xml\n" ${DIST_DIR}/solr/bin/search_config_setup.sh; \
-    fi
-RUN if [ "$ENABLE_SLAVE" == "true" ] ; then \
-        ${DIST_DIR}/solr/bin/search_config_setup.sh; \
-        sed -i "/^bash.*/i sed -i '/^\\\\\s*<requestHandler name=\"\\\\/replication\".*/a \
-            <lst name=\"slave\">\
-            <str name=\"masterUrl\">http://${MASTER_HOST}:8983/solr/alfresco</str>\
-            <str name=\"pollInterval\">00:00:60</str>\
-            </lst>' ${DIST_DIR}/solrhome/templates/rerank/conf/solrconfig.xml\n" ${DIST_DIR}/solr/bin/search_config_setup.sh; \
-    fi
-
 # SHARDING
 ARG ENABLE_SHARDING
 ARG NUM_SHARDS

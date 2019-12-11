@@ -47,6 +47,3 @@ RUN if [ "$SOLR_COMMS" == "https" ] ; then \
             truststorePass=\"${TRUSTSTORE_PASS}\" truststoreType=\"${TRUSTSTORE_TYPE}\" clientAuth=\"want\" sslProtocol=\"TLS\">\n\
         <\/Connector>/g" ${TOMCAT_DIR}/conf/server.xml; \
     fi
-
-# Copy custom content model to deployment folder
-COPY model/* $TOMCAT_DIR/shared/classes/alfresco/extension/
